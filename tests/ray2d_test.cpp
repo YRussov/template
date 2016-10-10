@@ -77,3 +77,14 @@ TEST(ray2d_test, test_Intersection_box2d)
   EXPECT_EQ( Ob11 % qt3 ,false);
   EXPECT_EQ( Ob11 % qt4 ,true);
 }
+
+TEST(ray2d_test, test_move_constructor) 
+{ 
+Ray2D Ob12; 
+Ray2D Ob13(0.0f, 0.0f, 1.0f, 1.0f); 
+EXPECT_EQ(Ob12 = std::move(Ob13), Ray2D(0.0f, 0.0f, 1.0f, 1.0f)); 
+EXPECT_EQ(Ob13, Ray2D(0.0f, 0.0f, 0.0f, 0.0f)); 
+
+Ray2D Ob14(Ray2D(0.0f, 0.0f, 1.0f, 1.0f)); 
+EXPECT_EQ(Ob14, Ray2D(0.0f, 0.0f, 1.0f, 1.0f)); 
+}
