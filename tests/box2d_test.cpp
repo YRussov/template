@@ -5,84 +5,99 @@
 
 TEST(box2d_test, test_construction)
 {
-	Box2D b1;
-	Point2D p1 = { 0.0f, 0.0f };
-	Point2D p2 = { 0.0f, 0.0f };
-	EXPECT_EQ(b1.min(), p1);
-	EXPECT_EQ(b1.max(), p2);
+  Box2D b1;
+  EXPECT_EQ(b1.boxMin(), Point2D(0.0f, 0.0f));
+  EXPECT_EQ(b1.boxMax(), Point2D(0.0f, 0.0f));
 
-	Point2D p3 = { 1.2f, 2.4f };
-	Point2D p4 = { 3.6f, 4.8f };
-	Box2D b2 = {p3, p4};
-	EXPECT_EQ(b2.min(), p3);
-	EXPECT_EQ(b2.max(), p4);
-	Box2D b3 = b2;
-	EXPECT_EQ(b2, b3);
+  Box2D b2 = { Point2D(1.2f, 2.4f), Point2D(3.6f, 4.8f) };
+  EXPECT_EQ(b2.boxMin(), Point2D(1.2f, 2.4f));
+  EXPECT_EQ(b2.boxMax(), Point2D(3.6f, 4.8f));
+
+  Box2D b3 = b2;
+  EXPECT_EQ(b2, b3);
 }
 
-TEST(box2d_test, test_initializer_list)
+TEST(box2d_test, test_initializer_list_float)
 {
-	Box2D b1 = { 1.0f, 2.0f, 3.0f , 4.0f, 5.0f, 6.0f };
-	Point2D p1 = { 1.0f, 2.0f };
-	Point2D p2 = { 3.0f, 4.0f };
-	EXPECT_EQ(b1.min(), p1);
-	EXPECT_EQ(b1.max(), p2);
-	Box2D b2 = { 1.0f, 2.0f };
-	Point2D p3 = { 1.0f, 2.0f };
-	Point2D p4 = { 0.0f, 0.0f };
-	EXPECT_EQ(b2.min(), p4);
-	EXPECT_EQ(b2.max(), p3);
+  Box2D b1 = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
+  EXPECT_EQ(b1.boxMin(), Point2D(1.0f, 2.0f));
+  EXPECT_EQ(b1.boxMax(), Point2D(3.0f, 4.0f));
+
+  Box2D b2 = { 1.0f, 2.0f };
+  EXPECT_EQ(b2.boxMin(), Point2D(0.0f, 0.0f));
+  EXPECT_EQ(b2.boxMax(), Point2D(1.0f, 2.0f));
+
+  Box2D b3 = { 1.0f, 2.0f, 3.0f };
+  EXPECT_EQ(b3.boxMin(), Point2D(1.0f, 0.0f));
+  EXPECT_EQ(b3.boxMax(), Point2D(3.0f, 2.0f));
+}
+
+TEST(box2d_test, test_initializer_list_Point2D)
+{
+  Box2D b1 = { Point2D(1.0f, 2.0f), Point2D(3.0f, 4.0f) };
+  EXPECT_EQ(b1.boxMin(), Point2D(1.0f, 2.0f));
+  EXPECT_EQ(b1.boxMax(), Point2D(3.0f, 4.0f));
+
+  Box2D b2 = { Point2D(1.0f, 2.0f) };
+  EXPECT_EQ(b2.boxMin(), Point2D(0.0f, 0.0f));
+  EXPECT_EQ(b2.boxMax(), Point2D(1.0f, 2.0f));
+}
+
+TEST(box2d_test, test_move_constructor)
+{
+  Box2D b1 = { Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f) };
+  Box2D b2 = { Point2D(0.0f, 0.0f), Point2D(4.0f, 4.0f) };
+  b2 = std::move(b1);
+  EXPECT_EQ(b2, Box2D(Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f)));
+  EXPECT_EQ(b1, Box2D(Point2D(0.0f, 0.0f), Point2D(4.0f, 4.0f)));
+
+  Box2D b3 (Box2D (Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f)));
+  EXPECT_EQ(b3, Box2D(Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f)));
 }
 
 TEST(box2d_test, test_assignment)
 {
-	Point2D p1 = { 1.2f, 2.3f };
-	Point2D p2 = { 3.4f, 4.5f };
-	Box2D b1;
-	b1 = { p1, p2 };
-	EXPECT_EQ(b1, Box2D(p1, p2));
+  Box2D b1;
+  b1 = { Point2D(1.2f, 2.3f), Point2D(3.4f, 4.5f) };
+  EXPECT_EQ(b1, Box2D(Point2D(1.2f, 2.3f), Point2D(3.4f, 4.5f)));
 }
 
 TEST(box2d_test, test_move)
 {
-	Point2D p1 = { 1.0f, 1.0f };
-	Point2D p2 = { 5.0f, 3.0f };
-	Box2D b1 = { p1, p2 };
-	Point2D vect = { 2.5f, 3.5f };
-	Point2D p3 = { 3.5f, 4.5f };
-	Point2D p4 = { 7.5f, 6.5f };
-	b1.Move(vect);
-	EXPECT_EQ(b1, Box2D(p3, p4));
+  Box2D b1 = { Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f) };
+  Point2D vect = { 2.5f, 3.5f };
+  b1.Move(vect);
+  EXPECT_EQ(b1, Box2D(Point2D(3.5f, 4.5f), Point2D(7.5f, 6.5f)));
 }
 
 TEST(box2d_test, test_center)
 {
-	Point2D p1 = { 1.0f, 1.0f };
-	Point2D p2 = { 5.0f, 3.0f };
-	Point2D p3 = { 3.0f, 2.0f };
-	Box2D b1 = { p1, p2 };
-	EXPECT_EQ(b1.Center(), p3);
+  Box2D b1 = { Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f) };
+  EXPECT_EQ(b1.Center(), Point2D(3.0f, 2.0f));
 }
 
 TEST(box2d_test, test_vertex)
 {
-	Point2D p1 = { 1.0f, 1.0f };
-	Point2D p2 = { 5.0f, 3.0f };
-	Box2D b1 = { p1, p2 };
-	Point2D p3 = { 1.0f, 3.0f };
-	Point2D p4 = { 5.0f, 1.0f };
-	EXPECT_EQ(b1.vertexLT(), p3);
-	EXPECT_EQ(b1.vertexRB(), p4);
-
+  Box2D b1 = { Point2D(1.0f, 1.0f), Point2D(5.0f, 3.0f) };
+  EXPECT_EQ(b1.vertexLT(), Point2D(1.0f, 3.0f));
+  EXPECT_EQ(b1.vertexRB(), Point2D(5.0f, 1.0f));
 }
 
-TEST(Box2D_test, test_Intersection)
+TEST(box2d_test, test_Intersection_1)
 {
-	Box2D b1 = { Point2D(0.0f, 0.0f), Point2D(4.0f, 2.0f) };
-	Box2D b2 = { Point2D(2.0f, 1.0f), Point2D(6.0f, 3.0f) };
-	EXPECT_EQ(Intersection(b1, b2), true);
-	b2.Move(Point2D(2.0f, 1.0f));
-	EXPECT_EQ(Intersection(b1, b2), false);
-	b2.Move(Point2D(1.0f, 1.0f));
-	EXPECT_EQ(Intersection(b1, b2), false);
+  Box2D b1 = { Point2D(0.0f, 0.0f), Point2D(4.0f, 2.0f) };
+  EXPECT_EQ(b1.Intersection(Point2D(2.0f, 1.0f), Point2D(6.0f, 3.0f)), true);
+  EXPECT_EQ(b1.Intersection(Point2D(4.0f, 2.0f), Point2D(8.0f, 4.0f)), false);
+  EXPECT_EQ(b1.Intersection(Point2D(5.0f, 3.0f), Point2D(9.0f, 5.0f)), false);
+}
+
+TEST(Box2D_test, test_Intersection_2)
+{
+  Box2D b1 = { Point2D(0.0f, 0.0f), Point2D(4.0f, 2.0f) };
+  Box2D b2 = { Point2D(2.0f, 1.0f), Point2D(6.0f, 3.0f) };
+  EXPECT_EQ(Intersection(b1, b2), true);
+  b2.Move(Point2D(2.0f, 1.0f));
+  EXPECT_EQ(Intersection(b1, b2), false);
+  b2.Move(Point2D(1.0f, 1.0f));
+  EXPECT_EQ(Intersection(b1, b2), false);
 }
