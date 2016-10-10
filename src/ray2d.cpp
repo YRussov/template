@@ -23,6 +23,19 @@ bool Ray2D::operator == (Ray2D const & obj) const
 Point2D & Ray2D::origin() { return m_origin; }
 Point2D & Ray2D::direction() { return m_direction; }
 
+Ray2D(Ray2D && obj) 
+{ 
+std::swap(m_origin, obj.m_origin); 
+std::swap(m_direction, obj.m_direction); 
+} 
+
+Ray2D & operator = (Ray2D && obj) 
+{ 
+std::swap(m_origin, obj.m_origin); 
+std::swap(m_direction, obj.m_direction); 
+return *this; 
+}
+
 Ray2D & Ray2D::operator = (Ray2D const & obj)
 {
   if (this == &obj) return *this;
