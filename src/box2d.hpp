@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "point2d.hpp"
 #include <cmath>
@@ -10,101 +10,121 @@ class Box2D
 
 public:
 
-	Box2D() = default;
+  Box2D() = default;
 
-	// Конструктор копирования.
-	Box2D(Box2D const & obj)
-		: m_min(obj.m_min)
-		, m_max(obj.m_max)
-	{}
+  Box2D(Box2D const & obj)
+    : m_min(obj.m_min)
+    , m_max(obj.m_max)
+  {}
 
-	// Конструктор с параметрами.
-	Box2D(Point2D const & min, Point2D const & max)
-		: m_min(min)
-		, m_max(max)
-	{
-		if (max < min)
-		{
-			m_min = max;
-			m_max = min;
-		}
-	}
+  Box2D(Point2D const & p_min, Point2D const & p_max)
+    : m_min(p_min)
+    , m_max(p_max)
+  {
+    CheckMaxMin();
+  }
 
-	// Конструктор со списком инициализации.
-	Box2D(std::initializer_list<float> const & lst)
-	{
-		Point2D * vals[] = { &m_min, &m_max };
-		int const count = sizeof(vals) / sizeof(vals[0]);
-		auto it = lst.begin();
-		for (int i = 0; i < count && it != lst.end(); i++, it += 2)
-			*vals[i] = { *(it), *(it + 1) };
+  Box2D(std::initializer_list<float> const & lst)
+  {
+    Point2D * vals[] = { &m_min, &m_max };
+    int const count = sizeof(vals) / sizeof(vals[0]);
+    auto it = lst.begin();
+    int j = 0;
+    while (it != lst.end())
+    {
+      j++;
+      it++;
+    }
+    it = lst.begin();
+    for (int i = 0; i < count && it != lst.end(); i++, it += 2)
+      *vals[i] = { Coordinates(*(it), j), Coordinates(*(it + 1), j) };
+    CheckMaxMin();
+  }
 
-		if (*vals[1] < *vals[0])
-		{
-			Point2D v = m_min;
-			m_min = m_max;
-			m_max = v;
-		}
-	}
+  Box2D(std::initializer_list<Point2D> const & lst)
+  {
+    Point2D * vals[] = { &m_min, &m_max };
+    int const count = sizeof(vals) / sizeof(vals[0]);
+    auto it = lst.begin();
+    for (int i = 0; i < count && it != lst.end(); i++, it++)
+      *vals[i] = *(it);
+    CheckMaxMin();
+  }
 
-	Point2D Center()												// получить координату центра
-	{
-		return (m_max + m_min) / 2;
-	}
+  Box2D(Box2D && obj)
+  {
+    std::swap(m_min, obj.m_min);
+    std::swap(m_max, obj.m_max);
+  }
 
-	Point2D vertexLT() { return{ m_min[0], m_max[1] }; }			// vertex left top
-	Point2D vertexRB() { return{ m_max[0], m_min[1] }; }			// vertex right bottom
+  Box2D & operator = (Box2D && obj)
+  {
+    std::swap(m_min, obj.m_min);
+    std::swap(m_max, obj.m_max);
+    return *this;
+  }
 
-	Point2D & min() { return m_min; }
-	Point2D & max() { return m_max; }
-	Point2D const & min() const { return m_min; }
-	Point2D const & max() const { return m_max; }
+  Point2D Center() { return (m_max + m_min) / 2; }
 
-	// Оператор присваивания.
-	Box2D & operator = (Box2D const & obj)
-	{
-		if (this == &obj) return *this;
-		m_min = obj.m_min;
-		m_max = obj.m_max;
-		return *this;
-	}
+  Point2D vertexLT() { return{ m_min[0], m_max[1] }; }
+  Point2D vertexRB() { return{ m_max[0], m_min[1] }; }
+  Point2D const & boxMin() const { return m_min; }
+  Point2D const & boxMax() const { return m_max; }
 
-	// Оператор логического равенства.
-	bool operator == (Box2D const & obj) const
-	{
-		return (m_min == obj.m_min && m_max == obj.m_max);
-	}
+  Box2D & operator = (Box2D const & obj)
+  {
+    if (this == &obj) return *this;
+    m_min = obj.m_min;
+    m_max = obj.m_max;
+    return *this;
+  }
 
-	void Move(Point2D & vectorMove)									// сместить на вектор vectorMove
-	{
-		m_min += vectorMove;
-		m_max += vectorMove;
-	}
+  bool operator == (Box2D const & obj) const
+  {
+    return (m_min == obj.m_min && m_max == obj.m_max);
+  }
 
-	bool Intersection(Point2D & min, Point2D & max) const			// проверить на пересечение с другим.
-	{
-		if (m_max[1] <= min[1] || m_min[1] >= max[1])
-		{
-			return false;
-		}
-		else if (m_max[0] <= min[0] || m_min[0] >= max[0])
-		{
-			return false;
-		}
-		return true;
-	}
+  void Move(Point2D & vectorMove)
+  {
+    m_min += vectorMove;
+    m_max += vectorMove;
+  }
 
-	~Box2D()
-	{}
+  bool Intersection(Point2D & min, Point2D & max) const
+  {
+    return !(m_max[1] <= min[1] || m_min[1] >= max[1] || m_max[0] <= min[0] || m_min[0] >= max[0]);
+  }
+
+  friend bool Intersection(Box2D const & obj1, Box2D const & obj2)
+  {
+    return !(obj1.m_max.y() <= obj2.m_min.y() || obj1.m_min.y() >= obj2.m_max.y() || obj1.m_max.x() <= obj2.m_min.x() || obj1.m_min.x() >= obj2.m_max.x());
+  }
+
+  ~Box2D()
+  {}
 
 protected:
 
-
 private:
 
-	Point2D m_min = { 0.0f, 0.0f };
-	Point2D m_max = { 0.0f, 0.0f };
+  Point2D m_min = { 0.0f, 0.0f };
+  Point2D m_max = { 0.0f, 0.0f };
 
+  void CheckMaxMin()
+  {
+    if (m_max.x() < m_min.x()) Swap(m_max.x(), m_min.x());
+    if (m_max.y() < m_min.y()) Swap(m_max.y(), m_min.y());
+  }
+
+  void Swap(float & a, float & b)
+  {
+    float c = a;
+    a = b;
+    b = c;
+  }
+
+  float Coordinates(float a, int & count)
+  {
+    return (count-- > 0) ? a : 0.0f;
+  }
 };
-
-
