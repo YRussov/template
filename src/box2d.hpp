@@ -29,13 +29,7 @@ public:
     Point2D * vals[] = { &m_min, &m_max };
     int const count = sizeof(vals) / sizeof(vals[0]);
     auto it = lst.begin();
-    int j = 0;
-    while (it != lst.end())
-    {
-      j++;
-      it++;
-    }
-    it = lst.begin();
+    int j = lst.size();
     for (int i = 0; i < count && it != lst.end(); i++, it += 2)
       *vals[i] = { Coordinates(*(it), j), Coordinates(*(it + 1), j) };
     CheckMaxMin();
@@ -66,11 +60,11 @@ public:
 
   Point2D Center() { return (m_max + m_min) / 2; }
 
-  Point2D vertexLT() { return{ m_min[0], m_max[1] }; }
-  Point2D vertexRB() { return{ m_max[0], m_min[1] }; }
+  Point2D const vertexLT() const { return{ m_min[0], m_max[1] }; }
+  Point2D const vertexRB() const { return{ m_max[0], m_min[1] }; }
   Point2D const & boxMin() const { return m_min; }
   Point2D const & boxMax() const { return m_max; }
-
+  
   Box2D & operator = (Box2D const & obj)
   {
     if (this == &obj) return *this;
@@ -100,9 +94,6 @@ public:
     return !(obj1.m_max.y() <= obj2.m_min.y() || obj1.m_min.y() >= obj2.m_max.y() || obj1.m_max.x() <= obj2.m_min.x() || obj1.m_min.x() >= obj2.m_max.x());
   }
 
-  ~Box2D()
-  {}
-
 protected:
 
 private:
@@ -112,15 +103,8 @@ private:
 
   void CheckMaxMin()
   {
-    if (m_max.x() < m_min.x()) Swap(m_max.x(), m_min.x());
-    if (m_max.y() < m_min.y()) Swap(m_max.y(), m_min.y());
-  }
-
-  void Swap(float & a, float & b)
-  {
-    float c = a;
-    a = b;
-    b = c;
+    if (m_max.x() < m_min.x()) std::swap(m_max.x(), m_min.x());
+    if (m_max.y() < m_min.y()) std::swap(m_max.y(), m_min.y());
   }
 
   float Coordinates(float a, int & count)
