@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "point2d.hpp"
 #include <cmath>
@@ -58,13 +58,16 @@ public:
     return *this;
   }
 
-  Point2D Center() { return (m_max + m_min) / 2; }
+  Point2D const Center() const { return (m_max + m_min) / 2; }
 
   Point2D const vertexLT() const { return{ m_min[0], m_max[1] }; }
   Point2D const vertexRB() const { return{ m_max[0], m_min[1] }; }
   Point2D const & boxMin() const { return m_min; }
   Point2D const & boxMax() const { return m_max; }
-  
+
+  float const Length() const { return m_max.x() - m_min.x(); }
+  float const Width() const { return m_max.y() - m_min.y(); }
+
   Box2D & operator = (Box2D const & obj)
   {
     if (this == &obj) return *this;
