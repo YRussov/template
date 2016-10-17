@@ -17,9 +17,9 @@ public:
     , m_max(obj.m_max)
   {}
 
-  Box2D(Point2D const & p_min, Point2D const & p_max)
-    : m_min(p_min)
-    , m_max(p_max)
+  Box2D(Point2D const & min, Point2D const & max)
+    : m_min(min)
+    , m_max(max)
   {
     CheckMaxMin();
   }
@@ -93,8 +93,6 @@ public:
   {
     return !(obj1.m_max.y() <= obj2.m_min.y() || obj1.m_min.y() >= obj2.m_max.y() || obj1.m_max.x() <= obj2.m_min.x() || obj1.m_min.x() >= obj2.m_max.x());
   }
-
-protected:
 
 private:
 

@@ -18,9 +18,9 @@ public:
     , m_direction(obj.m_direction)
   {}
 
-  Ray2D(Point2D const & p_origin, Point2D const & p_direction)
-    : m_origin(p_origin)
-    , m_direction(p_direction)
+  Ray2D(Point2D const & origin, Point2D const & direction)
+    : m_origin(origin)
+    , m_direction(direction)
   {
     Normalization();
   }
@@ -135,8 +135,6 @@ private:
 
   float const Length() const
   {
-    return pow(
-      pow(m_direction.x(), 2) +
-      pow(m_direction.y(), 2), 0.5);
+    return sqrt(m_direction.x() * m_direction.x() + m_direction.y() * m_direction.y());
   }
 };
