@@ -2,24 +2,25 @@
 #include "box2d.hpp"
 #include "ray2d.hpp"
 #include "point2d.hpp"
+#include "gameentity.hpp"
 
-class Obstacle
+class Obstacle : public GameEntity
 {
 public:
   Obstacle() = default;
   
   Obstacle(Point2D const & min, Point2D const & max) : m_min(min), m_max(max) {}
 
-  void SetObstacle(Point2D const & min, Point2D const & max)
+  void SetPosition(Point2D const & min, Point2D const & max)
   {
     m_min = min;
     m_max = max;
   }
 
-  Box2D GetObstacle() const
+  Box2D GetPosition() const
   {
-    Box2D m_obstacle = Box2D(m_min, m_max);
-    return m_obstacle;
+    Box2D m_position = Box2D(m_min, m_max);
+    return m_position;
   }
 
   void SetHealth (float health)
@@ -30,7 +31,7 @@ public:
   void Damage (float const & damage)
   {
     if (m_healt - damage > 0)
-      { m_health = m_health - damage; }
+      m_health = m_health - damage;
     else
       m_health = 0;
   }
