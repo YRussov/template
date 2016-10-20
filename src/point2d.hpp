@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 
+#include <iostream>
 #include <cmath>
 #include <initializer_list>
 #include <functional>
@@ -93,7 +94,15 @@ public:
   }
   Point2D operator / (float scale) const
   {
-    return{ m_x / scale, m_y / scale };
+    try
+    {
+      if (fabs(scale) < kEps) throw std::invalid_argument("Division by zero!");
+      return{ m_x / scale, m_y / scale };
+    }
+    catch (const std::exception & ex)
+    {
+      std::cerr << ex.what();
+    }
   }
 
   Point2D & operator += (Point2D const & obj)
@@ -116,9 +125,17 @@ public:
   }
   Point2D & operator /= (float scale)
   {
-    m_x /= scale;
-    m_y /= scale;
-    return *this;
+    try
+    {
+      if (fabs(scale) < kEps) throw std::invalid_argument("Division by zero!");
+      m_x /= scale;
+      m_y /= scale;
+      return *this;
+    }
+    catch (const std::exception & ex)
+    {
+      std::cerr << ex.what();
+    }
   }
 
   float operator [] (unsigned int index) const

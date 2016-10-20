@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <ostream>
 #include <initializer_list>
@@ -129,8 +129,16 @@ private:
   void Normalization()
   {
     float lng = Length();
-    m_direction.x() /= lng;
-    m_direction.y() /= lng;
+    try
+    {
+      if (lng < 1e-5) throw std::invalid_argument("Division by zero!");
+      m_direction.x() /= lng;
+      m_direction.y() /= lng;
+    }
+    catch (const std::exception & ex)
+    {
+      std::cerr << ex.what();
+    }
   }
 
   float const Length() const
