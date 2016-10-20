@@ -92,10 +92,10 @@ private:
   void Position()
   {
     m_position = {
-      (m_origin.x() - m_length / 2.0f),
-      (m_origin.y() - m_width / 2.0f),
-      (m_origin.x() + m_length / 2.0f),
-      (m_origin.y() + m_width / 2.0f) };
+      (m_origin.x() - m_width / 2.0f),
+      (m_origin.y() - m_length / 2.0f),
+      (m_origin.x() + m_width / 2.0f),
+      (m_origin.y() + m_length / 2.0f) };
   }
 
   void Origin() { m_origin = m_position.Center(); }
